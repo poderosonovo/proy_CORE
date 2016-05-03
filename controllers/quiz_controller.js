@@ -1,17 +1,6 @@
 
 var models = require('../models');
-
-
-// GET /quizzes
-exports.index = function(req, res, next) {
-	models.Quiz.findAll()
-		.then(function(quizzes) {
-			res.render('quizzes/index', {quizzes: quizzes});
-		})
-		.catch(function(error) {
-			next(error);
-		});
-};
+var Sequelize = require('sequelize');
 
 // Autoload el quiz asociado a :quizId
 exports.load = function(req, res, next, quizId) {
@@ -21,11 +10,24 @@ exports.load = function(req, res, next, quizId) {
         		req.quiz = quiz;
         		next();
       		} else { 
-      			next(new Error('No existe quizId=' + quizId));
+      			throw new Error('No existe quizId=' + quizId);
       		}
         })
         .catch(function(error) { next(error); });
 };
+
+
+// GET /quizzes
+exports.index = function(req, res, next) {
+	models.Quiz.findAll()
+		.then(function(quizzes) {
+			res.render('quizzes/index.ejs', { quizzes: quizzes});
+		})
+		.catch(function(error) {
+			next(error);
+		});
+};
+
 
 // GET /quizzes/:id
 exports.show = function(req, res, next) {
@@ -49,6 +51,7 @@ exports.check = function(req, res, next) {
 								   answer: answer });
 };
 
+
 // GET /quizzes/new
 exports.new = function(req, res, next) {
   var quiz = models.Quiz.build({question: "", answer: ""});
@@ -60,11 +63,20 @@ exports.create = function(req, res, next) {
   var quiz = models.Quiz.build({ question: req.body.quiz.question, 
   	                             answer:   req.body.quiz.answer} );
 
-// guarda en DB los campos pregunta y respuesta de quiz
- quiz.save({fields: ["question", "answer"]})
+  // guarda en DB los campos pregunta y respuesta de quiz
+  quiz.save({fields: ["question", "answer"]})
   	.then(function(quiz) {
 		req.flash('success', 'Quiz creado con éxito.');
     	res.redirect('/quizzes');  // res.redirect: Redirección HTTP a lista de preguntas
+    })
+    .catch(Sequelize.ValidationError, function(error) {
+
+      req.flash('error', 'Errores en el formulario:');
+      for (var i in error.errors) {
+          req.flash('error', error.errors[i].value);
+      };
+
+      res.render('quizzes/new', {quiz: quiz});
     })
     .catch(function(error) {
 		req.flash('error', 'Error al crear un Quiz: '+error.message);
