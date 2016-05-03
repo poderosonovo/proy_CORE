@@ -17,13 +17,24 @@ exports.load = function(req, res, next, quizId) {
 
 // GET /quizzes
 exports.index = function(req, res, next) {
-	models.Quiz.findAll()
-		.then(function(quizzes) {
-			res.render('quizzes/index.ejs', { quizzes: quizzes});
-		})
-		.catch(function(error) {
-			next(error);
-		});
+  if(req.query.search){
+  	var sep = req.query.search.split(" ");
+  	var busqueda = sep.join("%");
+  	models.Quiz.findAll({where: ["question like ?", '%'+busqueda+'%' ], 
+  						order: '"question" ASC'})
+  	.then(function(quizzes){
+  		quizzes = quizzes.sort();
+  		res.render('quizzes/index.ejs', {quizzes: quizzes});
+  	});
+  }
+
+  else models.Quiz.findAll()
+   .then(function(quizzes) {
+     res.render('quizzes/index.ejs', {quizzes: quizzes});
+   	})
+   .catch(function(error) {
+   		next(error); 
+   	});
 };
 
 
