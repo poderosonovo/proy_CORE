@@ -24,6 +24,11 @@
         <a href="/">Inicio</a>
         <a href="/quizzes">Preguntas</a>
         <a href="/author">Autor</a>
+         <p>
+          <form method="get" action="/quizzes?search=texto_a_buscar"> 
+          <input type="text" name="texto_a_buscar"/>
+          <input type="submit" value="Buscar">
+        </p>
       </nav>
 
       <section class="main">
