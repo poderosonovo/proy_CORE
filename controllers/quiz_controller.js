@@ -19,34 +19,49 @@ exports.load = function(req, res, next, quizId) {
 
 // GET /quizzes
 exports.index = function(req, res, next) {
-  if(req.query.search){
-  	var sep = req.query.search.split(" ");
-  	var busqueda = sep.join("%");
-  	models.Quiz.findAll({where: ["question like ?", '%'+busqueda+'%' ], 
-  						order: '"question" ASC'})
-  	.then(function(quizzes){
-  		quizzes = quizzes.sort();
-  		res.render('quizzes/index.ejs', {quizzes: quizzes});
-  	});
+  if(req.params.format==="json"){
+    models.Quiz.findAll()
+    .then(function(quizzes) {
+      res.send(JSON.stringify(quizzes));
+    })
+    .catch(function(error) {
+      next(error);
+    });
   }
-
-  else models.Quiz.findAll()
-   .then(function(quizzes) {
-     res.render('quizzes/index.ejs', {quizzes: quizzes});
-   	})
-   .catch(function(error) {
-   		next(error); 
-   	});
+  else{
+    if(req.query.search){
+      var sep = req.query.search.split(" ");
+      var busqueda = sep.join("%");
+      models.Quiz.findAll({where: ["question like ?", '%'+busqueda+'%' ], 
+                order: '"question" ASC'})
+      .then(function(quizzes){
+        quizzes = quizzes.sort();
+        res.render('quizzes/index.ejs', {quizzes: quizzes});
+      });
+    }
+    else{
+      models.Quiz.findAll()
+     .then(function(quizzes) {
+       res.render('quizzes/index.ejs', {quizzes: quizzes});
+      })
+     .catch(function(error) {
+        next(error); 
+      });
+    }
+  }  
 };
 
 
 // GET /quizzes/:id
 exports.show = function(req, res, next) {
-
-	var answer = req.query.answer || '';
-
-	res.render('quizzes/show', {quiz: req.quiz,
-								answer: answer});
+  if(req.params.format==="json"){
+    res.send(JSON.stringify(req.quiz));
+  }
+  else{
+    var answer = req.query.answer || '';
+    res.render('quizzes/show', {quiz: req.quiz,
+                                answer: answer});
+  }
 };
 
 
