@@ -28,6 +28,16 @@ var sequelize = new Sequelize(url,
 // Importar la definicion de la tabla Quiz de quiz.js
 var Quiz = sequelize.import(path.join(__dirname,'quiz'));
 
+// Importar la definicion de la tabla Comments de comment.js
+var Comment = sequelize.import(path.join(__dirname,'comment'));
+
+//Importar la definición de la tabla de user.js
+var User= sequelize.import(path.join(__dirname, 'user'));
+
+// Relaciones entre modelos
+Comment.belongsTo(Quiz);
+Quiz.hasMany(Comment);
+
 /*
 // sequelize.sync() crea e inicializa tabla de preguntas en DB
 sequelize.sync()
@@ -50,6 +60,6 @@ sequelize.sync()
         console.log("Error Sincronizando las tablas de la BBDD:", error);
         process.exit(1);
     });*/
-
-
+exports.User=User; //exportar definición de tabla Users
+exports.Comment=Comment; //exportar definición de la tabla Comment
 exports.Quiz = Quiz; // exportar definición de tabla Quiz
