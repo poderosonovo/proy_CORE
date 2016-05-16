@@ -37,6 +37,9 @@ var User= sequelize.import(path.join(__dirname, 'user'));
 // Relaciones entre modelos
 Comment.belongsTo(Quiz);
 Quiz.hasMany(Comment);
+User.hasMany(Quiz, {foreignKey: 'AuthorId'});
+Quiz.belongsTo(User, {as: 'Author', foreignKey:'AuthorId'}); //cambiamos User por Author
+
 
 /*
 // sequelize.sync() crea e inicializa tabla de preguntas en DB
