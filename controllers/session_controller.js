@@ -22,7 +22,14 @@ var authenticate = function(login, password) {
         });
 }; 
 
-
+//Se requiere hacer login
+exports.loginRequired=function(req, res, next){
+    if(req.session.user) {
+        next();
+    } else{
+        res.redirect('/session?redir='+ (req.param('redir')|| req.url));
+    }
+}
 
 // GET /session   -- Formulario de login
 exports.new = function(req, res, next) {
@@ -74,3 +81,4 @@ exports.destroy = function(req, res, next) {
     
     res.redirect("/session"); // redirect a login
 };
+
