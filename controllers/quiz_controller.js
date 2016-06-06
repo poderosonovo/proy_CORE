@@ -54,12 +54,21 @@ exports.index = function(req, res, next) {
     if(req.query.search){
       var sep = req.query.search.split(" ");
       var busqueda = sep.join("%");
+      var formato=busqueda.indexOf(".json");
+      if(formato!==-1){
+      	var busqueda= busqueda.slice(0,formato);
+      }
       models.Quiz.findAll({where: ["question like ?", '%'+busqueda+'%' ], 
                 order: '"question" ASC',
                 include: [ models.Attachment ]})
       .then(function(quizzes){
-        quizzes = quizzes.sort();
-        res.render('quizzes/index.ejs', {quizzes: quizzes});
+      	if(formato!==-1){
+      		res.send(JSON.stringify(quizzes));
+      	}
+      	else{
+      		quizzes = quizzes.sort();
+        	res.render('quizzes/index.ejs', {quizzes: quizzes});
+      	}
       });
     }
     else{
@@ -223,7 +232,7 @@ exports.destroy = function(req, res, next) {
 
     req.quiz.destroy()
       .then( function() {
-      req.flash('success', 'Quiz borrado con éxito.');
+      	req.flash('success', 'Quiz borrado con éxito.');
         res.redirect('/quizzes');
       })
       .catch(function(error){

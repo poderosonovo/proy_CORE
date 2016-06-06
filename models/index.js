@@ -47,28 +47,6 @@ Quiz.hasOne(Attachment);
 Comment.belongsTo(User, {as: 'Author', foreignKey:'AuthorId'});
 User.hasMany(Comment, {foreignKey: 'AuthorId'})
 
-/*
-// sequelize.sync() crea e inicializa tabla de preguntas en DB
-sequelize.sync()
-    .then(function() {
-        // Ya se han creado las tablas necesarias.
-        return Quiz.count()
-                .then(function (c) {
-                    if (c === 0) {   // la tabla se inicializa solo si está vacía
-                        return Quiz.bulkCreate([ {question: 'Capital de Italia',   answer: 'Roma'},
-                                                 {question: 'Capital de Portugal', answer: 'Lisboa'},
-                                                 {question: 'Capital de España',   answer: 'Madrid'}
-                                              ])
-                                   .then(function() {
-                                        console.log('Base de datos inicializada con datos');
-                                    });
-                    }
-                });
-    })
-    .catch(function(error) {
-        console.log("Error Sincronizando las tablas de la BBDD:", error);
-        process.exit(1);
-    });*/
 exports.User=User; //exportar definición de tabla Users
 exports.Comment=Comment; //exportar definición de la tabla Comment
 exports.Quiz = Quiz; // exportar definición de tabla Quiz

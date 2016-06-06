@@ -14,6 +14,11 @@
     <p>
       <input type="text" name="answer" value="<%= answer %>" placeholder="Respuesta" />
       <input type="submit" value="Comprobar">
+      <% for (var j in users) {
+        if (users[j].id===quiz.AuthorId) { %>
+          (autor: <%= users[j].username %>)
+        <% } %>
+      <% } %>
     </p>
   </form>
 </p>
@@ -35,6 +40,10 @@
               (autor: <%= users[j].username %>)
             <% } %>
           <% } %>
+          <% if (session.user && (session.user.isAdmin || (quiz.AuthorId === session.user.id))) { %>
+            <a href="/quizzes/<%= quiz.id %>/comments/<%= comment.id %>?_method=DELETE"
+              onClick="return confirm('Borrar: <%= comment.text %>');""><button>Borrar</button></a>
+          <% } %>
           </li>
        <% } else if (session.user && (session.user.isAdmin || (quiz.AuthorId === session.user.id))) { %>
           <li> <%= comment.text %> 
@@ -46,6 +55,8 @@
           </li>
           <a href="/quizzes/<%= quiz.id %>/comments/<%= comment.id %>/accept?_method=PUT">
           <button>Aceptar</button></a>
+          <a href="/quizzes/<%= quiz.id %>/comments/<%= comment.id %>?_method=DELETE"
+            onClick="return confirm('Borrar: <%= comment.text %>');""><button>Borrar</button></a>
        <% } %>
   <% } %>
 </ul>

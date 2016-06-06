@@ -70,3 +70,14 @@ exports.accept = function(req, res, next) {
     });
   };
 
+exports.destroy= function(req,res,next) {
+  req.comment.destroy()
+  .then(function(){
+    req.flash ('success', 'Comentario borrado con éxito.');
+    res.redirect('/quizzes/'+req.params.quizId);
+  })
+  .catch(function(error) {
+    req.flash('error', 'Error al borrar un comentario: '+error.message);
+    next(error);
+  });
+};
