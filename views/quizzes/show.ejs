@@ -3,6 +3,15 @@
   <form method="get" action="/quizzes/<%= quiz.id %>/check">        
     <p>
       Pregunta: <%= quiz.question %>
+      <%var autorQuiz=0;
+      	for (var j in users) {
+        	if (users[j].id===quiz.AuthorId) { %>
+          		(autor: <%= users[j].username %>)
+          		<% autorQuiz=1 %>
+        	<% } %>
+      	<% } if (autorQuiz===0) { %>
+      		(autor: desconocido)
+      	<% } %>
     </p>
 
     <% if (quiz.Attachment) { %>
@@ -14,11 +23,6 @@
     <p>
       <input type="text" name="answer" value="<%= answer %>" placeholder="Respuesta" />
       <input type="submit" value="Comprobar">
-      <% for (var j in users) {
-        if (users[j].id===quiz.AuthorId) { %>
-          (autor: <%= users[j].username %>)
-        <% } %>
-      <% } %>
     </p>
   </form>
 </p>
@@ -35,10 +39,14 @@
        var comment = quiz.Comments[i];
        if (comment.accepted) { %>
           <li> <%= comment.text %>
-          <% for (var j in users) {
-            if (users[j].id===comment.AuthorId) { %>
-              (autor: <%= users[j].username %>)
-            <% } %>
+          <%var autorComment=0; 
+          	for (var j in users) {
+	            if (users[j].id===comment.AuthorId) { %>
+	              (autor: <%= users[j].username %>)
+	              <% autorComment=1 %>
+	            <% } %>
+          <% } if (autorComment===0) { %>
+          		(autor: desconocido)
           <% } %>
           <% if (session.user && (session.user.isAdmin || (quiz.AuthorId === session.user.id))) { %>
             <a href="/quizzes/<%= quiz.id %>/comments/<%= comment.id %>?_method=DELETE"
@@ -47,10 +55,14 @@
           </li>
        <% } else if (session.user && (session.user.isAdmin || (quiz.AuthorId === session.user.id))) { %>
           <li> <%= comment.text %> 
-          <% for (var j in users) { 
-            if (users[j].id===comment.AuthorId) { %>
-              (autor: <%= users[j].username %>)
-            <% } %>
+          <%var autorComment=0;
+          	for (var j in users) { 
+	            if (users[j].id===comment.AuthorId) { %>
+	              (autor: <%= users[j].username %>)
+	              <% autorComment=1 %>
+	            <% } %>
+          <% } if (autorComment===0) { %>
+          		(autor: desconocido)
           <% } %>
           </li>
           <a href="/quizzes/<%= quiz.id %>/comments/<%= comment.id %>/accept?_method=PUT">

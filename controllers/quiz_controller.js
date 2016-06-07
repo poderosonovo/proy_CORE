@@ -54,15 +54,19 @@ exports.index = function(req, res, next) {
     if(req.query.search){
       var sep = req.query.search.split(" ");
       var busqueda = sep.join("%");
-      var formato=busqueda.indexOf(".json");
-      if(formato!==-1){
-      	var busqueda= busqueda.slice(0,formato);
+      var formato= ".html";
+      if(busqueda.indexOf(".json")!==-1){
+      	formato = ".json";
+      	busqueda = busqueda.slice(0, busqueda.indexOf(formato));
       }
-      models.Quiz.findAll({where: ["question like ?", '%'+busqueda+'%' ], 
-                order: '"question" ASC',
-                include: [ models.Attachment ]})
+      else if(busqueda.indexOf(".html")){
+      	busqueda = busqueda.slice(0, busqueda.indexOf(formato));
+      }
+      models.Quiz.findAll({	where: ["question like ?", '%'+busqueda+'%' ], 
+                			order: '"question" ASC',
+                			include: [ models.Attachment ]})
       .then(function(quizzes){
-      	if(formato!==-1){
+      	if(formato===".json"){
       		res.send(JSON.stringify(quizzes));
       	}
       	else{
